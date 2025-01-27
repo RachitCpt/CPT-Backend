@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import CreateUserView, RoleListView
 from .views import LoginView, UserProfileView, MasterRolesView, ExternalApiView, GetAssigneeExternalApiView, UpdateCaseExternalApiView, CreateRoleView, UpdateRoleView, PageListView, UserListView, UpdateUserRoleView
-
+from .views import ProjectCaseExternalApiView, SetProjectCaseExternalApiView
 urlpatterns = [
     path('create-user/', CreateUserView.as_view(), name='create-user'),
     path('login/', LoginView.as_view(), name='login'),
@@ -15,5 +15,7 @@ urlpatterns = [
     path('updateTicket/', UpdateCaseExternalApiView.as_view(), name='update-ticket'),
     path('users/', UserListView.as_view(), name='user-list'),
     path('users/<int:user_id>/role/', UpdateUserRoleView.as_view(), name='update-user-role'),
+    path('getProject/', ProjectCaseExternalApiView.as_view(), name='Get-Projects'),
+    path('setProject/', SetProjectCaseExternalApiView.as_view(), name='Set-Projects')
 ]
 

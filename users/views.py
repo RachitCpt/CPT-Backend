@@ -225,7 +225,11 @@ class UpdateCaseExternalApiView(APIView):
             "status": request.data.get('status'),
             "message": request.data.get('message'),
             "priority" : request.data.get('priority'),
-            "assignedto" : request.data.get('assignedto')
+            "assignedto" : request.data.get('assignedto'),
+            "startdate" : request.data.get('startdate'),
+            "enddate" : request.data.get('enddate'),
+            "hours_spent" : request.data.get('hours_spent'),
+            "task_doneby" : request.data.get('task_doneby')
         }
 
         # Include the cookies if needed
@@ -349,3 +353,112 @@ class UpdateUserRoleView(APIView):
         # Serialize and return the updated user data
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ProjectCaseExternalApiView(APIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        url = 'https://7460199.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=263&deploy=1'
+
+        # OAuth1 credentials
+        oauth = OAuth1(
+            client_key= '54913b83c310dc288c14b446c9024c58fab9a91ea10d4fa40289aa4d23f4a58b',
+            # consumer_key = '54913b83c310dc288c14b446c9024c58fab9a91ea10d4fa40289aa4d23f4a58b',
+            client_secret = '9dc4a158efe80561c042b5bb1df30b67f89d14ea900e0202e18b02365f5b526f',
+            resource_owner_key = '3a48f6c255f6f38da29759a3bec5eb14b090918bb385032230e9b8106a9b6795',
+            resource_owner_secret = 'eef8a6efa3838435f1a9ca2659e34366885ecb6cbe5f0e24bf768bf448550177',  # Replace with your actual resource owner secret
+            signature_method='HMAC-SHA256',
+            signature_type='auth_header',
+            realm='7460199',
+            force_include_body=True
+        )
+
+        # The data to be sent in the request body
+        data = {
+            "fromDate": request.data.get('fromDate'),
+            "endDate": request.data.get('endDate')
+        }
+
+        # Include the cookies if needed
+        cookies = {
+            'ak_bmsc': 'C98C8316CC8E00E47D2B766E767158E8~000000000000000000000000000000~YAAQBo0sMUQ5pmiSAQAAG5qkxhnkjyPwMMJ6cVxXqdYR/W3C5nZjL8c18p7B5UR5ojLAyLTg+P8ekAf6nAV7CIsxZukt0pLl1i4Q/XJYXSsVyFKrpK5LtWulyE+pOLuI38xnft/UpwDFx5ZPEhx9STCB98JwvCXJQ5HX8EUzgo0uDxdRokOv7X+aJBXikQPxSh6rsk3HJKh76MhRZNd4X/llMiNIOwyK5u39jIwpbdQsOSexoVwAS9B5/dMa8DMEbi5veKTMf/e+6p917ecwCImv5SiHiDSbVuMuYsX8XyD0um0EIOT5Gg6U9wrroJfTjBV02c5Bk4eQO/au8as1lAZAjUKXuo5DGE0n1dT5pqGHiJJ0mdHrW2Hm',
+            'bm_sv': '20D3A6113735F17E8397668257447C65~YAAQFI0sMdBm7oySAQAA5+Wxxhku6SrhANBvghDFhCw+lSZN3V30ZTPT3dcDdi4geF8fRFrRF6WWpqxTXP0Gx6n0OzDQNFxNO0Owv5VDqd9UkV4SaXx20/fC05PuFrpyw4euyokHp8wiHTtQxcp/5LsyNBC0PX11eZHaCWMEqD6eQMukyNeO8ZTDg9iZekYMAfOZdoJIS7W4hHvcpq93VXYEBZi0epPtPiAANeQltd0Mb7ruq1yMNeGj/wv/u8JYiGqAatYXWI4E2uEmJWTE~1'
+        }
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'OAuth realm="7460199",oauth_version="1.0"',  # Explicitly setting realm and version'
+            'Connection': 'keep-alive'
+        }
+
+        try:
+            # Make the request with OAuth1 authentication
+            response = requests.post(url, auth=oauth,headers=headers, cookies=cookies, json=data)
+            response.raise_for_status()  # Raise an error for bad responses
+            print("Status Code:", response.status_code)
+            print("Response Content:", response.content)
+            return Response(response.json(), status=response.status_code)
+
+        except requests.exceptions.HTTPError as http_err:
+            return Response({'error': str(http_err)}, status=response.status_code)
+
+        except Exception as err:
+            return Response({'error': str(err)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+class SetProjectCaseExternalApiView(APIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        url = 'https://7460199.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=264&deploy=1'
+
+        # OAuth1 credentials
+        oauth = OAuth1(
+            client_key= '54913b83c310dc288c14b446c9024c58fab9a91ea10d4fa40289aa4d23f4a58b',
+            # consumer_key = '54913b83c310dc288c14b446c9024c58fab9a91ea10d4fa40289aa4d23f4a58b',
+            client_secret = '9dc4a158efe80561c042b5bb1df30b67f89d14ea900e0202e18b02365f5b526f',
+            resource_owner_key = '3a48f6c255f6f38da29759a3bec5eb14b090918bb385032230e9b8106a9b6795',
+            resource_owner_secret = 'eef8a6efa3838435f1a9ca2659e34366885ecb6cbe5f0e24bf768bf448550177',  # Replace with your actual resource owner secret
+            signature_method='HMAC-SHA256',
+            signature_type='auth_header',
+            realm='7460199',
+            force_include_body=True
+        )
+
+        # The data to be sent in the request body
+        data = {
+            "project": request.data.get('project'),
+            "projectTask": request.data.get('projectTask'),
+            "startDate": request.data.get('startDate'),
+            "endDate": request.data.get('endDate'),
+            "hours": request.data.get('hours'),
+            "taskDoneBy": request.data.get('taskDoneBy')
+        }
+
+        # Include the cookies if needed
+        cookies = {
+            'ak_bmsc': 'C98C8316CC8E00E47D2B766E767158E8~000000000000000000000000000000~YAAQBo0sMUQ5pmiSAQAAG5qkxhnkjyPwMMJ6cVxXqdYR/W3C5nZjL8c18p7B5UR5ojLAyLTg+P8ekAf6nAV7CIsxZukt0pLl1i4Q/XJYXSsVyFKrpK5LtWulyE+pOLuI38xnft/UpwDFx5ZPEhx9STCB98JwvCXJQ5HX8EUzgo0uDxdRokOv7X+aJBXikQPxSh6rsk3HJKh76MhRZNd4X/llMiNIOwyK5u39jIwpbdQsOSexoVwAS9B5/dMa8DMEbi5veKTMf/e+6p917ecwCImv5SiHiDSbVuMuYsX8XyD0um0EIOT5Gg6U9wrroJfTjBV02c5Bk4eQO/au8as1lAZAjUKXuo5DGE0n1dT5pqGHiJJ0mdHrW2Hm',
+            'bm_sv': '20D3A6113735F17E8397668257447C65~YAAQFI0sMdBm7oySAQAA5+Wxxhku6SrhANBvghDFhCw+lSZN3V30ZTPT3dcDdi4geF8fRFrRF6WWpqxTXP0Gx6n0OzDQNFxNO0Owv5VDqd9UkV4SaXx20/fC05PuFrpyw4euyokHp8wiHTtQxcp/5LsyNBC0PX11eZHaCWMEqD6eQMukyNeO8ZTDg9iZekYMAfOZdoJIS7W4hHvcpq93VXYEBZi0epPtPiAANeQltd0Mb7ruq1yMNeGj/wv/u8JYiGqAatYXWI4E2uEmJWTE~1'
+        }
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'OAuth realm="7460199",oauth_version="1.0"',  # Explicitly setting realm and version'
+            'Connection': 'keep-alive'
+        }
+
+        try:
+            # Make the request with OAuth1 authentication
+            response = requests.post(url, auth=oauth,headers=headers, cookies=cookies, json=data)
+            response.raise_for_status()  # Raise an error for bad responses
+            print("Status Code:", response.status_code)
+            print("Response Content:", response.content)
+            return Response(response.json(), status=response.status_code)
+
+        except requests.exceptions.HTTPError as http_err:
+            return Response({'error': str(http_err)}, status=response.status_code)
+
+        except Exception as err:
+            return Response({'error': str(err)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
