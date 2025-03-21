@@ -131,5 +131,9 @@ class UserCreationSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-
+class JobOpeningSerializer(serializers.Serializer):
+    technology   = serializers.CharField(max_length=200)
+    job_description = serializers.CharField(max_length=200)
+    experience = serializers.CharField(max_length=100)
+    location = serializers.CharField(max_length=100)
 

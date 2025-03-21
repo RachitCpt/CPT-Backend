@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import User, RoleMaster, PageMaster
 from .serializers import UserSerializer, UserLoginSerializer, UserProfileSerializer, RoleMasterSerializer, RoleMasterUpdateSerializer, PageMasterSerializer, UserCreationSerializer
+from .serializers import JobOpeningSerializer
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -15,6 +16,7 @@ from rest_framework.permissions import IsAuthenticated
 from requests_oauthlib import OAuth1
 import requests
 import json
+import openpyxl
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -462,3 +464,29 @@ class SetProjectCaseExternalApiView(APIView):
 
         except Exception as err:
             return Response({'error': str(err)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class JobOpeningList(APIView):
+    def get(self, request):
+        # Path to the Excel file
+        file_path = '../data/job_opening.xlsx'
+        #file_path = 'D:/Connate/ConnatePeople Final Website/job_opening.xlsx'
+        wb = openpyxl.load_workbook(file_path)
+        sheet = wb.active
+ 
+        # Extract rows (skipping the header row)
+        rows = list(sheet.iter_rows(values_only=True))[1:]
+ 
+        job_openings = []
+        for row in rows:
+            job_openings.append({
+                'technology': row[0],  # assuming job title is in the first column
+                'job_description': row[1],   # location in the second column
+                'experience': row[2],   # job type in the third column
+                'location': row[3],     # salary in the fourth column
+            })
+ 
+        # Serialize the data
+        serializer = JobOpeningSerializer(job_openings, many=True)
+ 
+        # Return the data as JSON
+        return Response(serializer.data)
